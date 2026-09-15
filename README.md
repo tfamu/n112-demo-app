@@ -3,12 +3,16 @@
 JLPT N1（文法 / 語彙 / 漢字）学習アプリの公開デモです。フラッシュカード、クイズ、
 課ごとのコメント、クラス全体の進捗タイムラインを備えています。
 
+**▶ 公開デモ: https://n112-next-demo-app.vercel.app/**
+
 **ログイン不要・データベース不要。** 表示される内容はすべて `src/data/` にある
 ダミーデータで、操作した結果（覚えた／まだ、クイズの点数、コメント）は開いている
 ブラウザの `localStorage` にのみ保存されます。ヘッダーの **リセット** ですべて消して
 初期状態に戻せます。
 
 ## 動かす
+
+上のリンクからそのまま触れます。手元で動かす場合は次の通りです。
 
 ```bash
 npm install
@@ -91,8 +95,9 @@ shadcn/ui（Base UI）· lucide-react
 
 ## デプロイ
 
-ふつうの Next.js アプリなので、Vercel でも `next build` + `next start` が動く環境なら
-どこでも動きます。
+公開デモは Vercel でホストしています（https://n112-next-demo-app.vercel.app/）。
+ふつうの Next.js アプリなので、`next build` + `next start` が動く環境ならどこでも
+動きます。
 
 ```bash
 npm run build
