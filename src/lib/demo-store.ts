@@ -13,12 +13,13 @@ import type { Comment, ReviewStatus, StudyTrack } from '@/data/types'
 import { STUDY_TRACKS } from '@/data/types'
 
 // ---------------------------------------------------------------------------
-// Bản thật ghi tiến độ vào Postgres qua Server Action. Bản demo không có DB:
-// mọi thay đổi nằm trong một store nhỏ ở module này và được lưu vào localStorage
-// của chính trình duyệt đang mở. Xoá localStorage là về lại dữ liệu mẫu.
+// 本番では Server Action から Postgres に書き込んでいる部分。デモには DB が
+// ないので、このモジュール内の小さなストアに持ち、ブラウザの localStorage に
+// 保存する。localStorage を消せば初期のダミーデータに戻る。
 //
-// Dùng useSyncExternalStore thay cho Context: server render luôn ra dữ liệu mẫu,
-// localStorage chỉ được nạp sau khi hydrate xong nên HTML hai bên không lệch.
+// Context ではなく useSyncExternalStore を使っているのは、サーバー描画は必ず
+// ダミーデータのまま、localStorage の読み込みはハイドレーション後にする＝
+// サーバーとクライアントの HTML をずらさないため。
 // ---------------------------------------------------------------------------
 
 const STORAGE_KEY = 'n112-demo/v1'
@@ -56,8 +57,8 @@ function seedState(): DemoState {
   return { reviews, attempts: {}, comments: [...SEED_COMMENTS] }
 }
 
-// Snapshot dùng cho server render — phải là CÙNG một object mỗi lần gọi, nếu
-// không useSyncExternalStore sẽ render vô hạn.
+// サーバー描画用のスナップショット。毎回「同じ」オブジェクトを返さないと
+// useSyncExternalStore が無限に再描画するので、ここで一度だけ作る。
 const SEED_SNAPSHOT = seedState()
 
 let current: DemoState = SEED_SNAPSHOT
@@ -77,7 +78,8 @@ function readStorage(): DemoState | null {
       comments: Array.isArray(comments) ? comments : [],
     }
   } catch {
-    // Trình duyệt chặn localStorage (chế độ riêng tư) -> cứ chạy với dữ liệu mẫu.
+    // プライベートモードなどで localStorage が使えない場合は
+    // ダミーデータのまま動かす。
     return null
   }
 }
@@ -86,12 +88,12 @@ function writeStorage(state: DemoState) {
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
   } catch {
-    // Không lưu được thì thôi, demo vẫn chạy trong phiên hiện tại.
+    // 保存できなくてもセッション中は動くので握りつぶす。
   }
 }
 
 function subscribe(listener: () => void): () => void {
-  // Lần đầu có component lắng nghe = đã ở trên client và đã hydrate xong.
+  // 最初の購読＝クライアント側でハイドレーションが終わったタイミング。
   if (!storageLoaded) {
     storageLoaded = true
     const stored = readStorage()
@@ -117,11 +119,11 @@ function update(next: DemoState) {
   for (const listener of listeners) listener()
 }
 
-// --- Hành động (thay cho các Server Action ở bản thật) -----------------------
+// --- 更新系（本番の Server Action に当たる部分） -----------------------------
 
 function markCard(cardId: string, status: 'known' | 'learning'): MarkResult {
-  // Luật giữ nguyên từ bản thật: thẻ đang 'weak' (do làm sai quiz) không hạ được
-  // qua flashcard, phải làm đúng ở quiz mới bỏ đánh dấu.
+  // 本番と同じ仕様: クイズで間違えて 'weak' になったカードはフラッシュカード
+  // 側では下げられない。クイズで正解して初めて解除される。
   if (current.reviews[cardId]?.status === 'weak') {
     return { applied: 'weak', blocked: true }
   }
@@ -163,12 +165,12 @@ function submitQuiz(quizId: string, answers: Record<string, number>): QuizResult
   }
 
   const reviews = { ...current.reviews }
-  // Sai -> weak, miss_count + 1.
+  // 不正解 -> weak、missCount を 1 増やす。
   for (const cardId of wrongCards) {
     reviews[cardId] = { status: 'weak', missCount: (reviews[cardId]?.missCount ?? 0) + 1 }
   }
-  // Đúng mà thẻ đang weak -> gỡ về known, giữ nguyên miss_count làm lịch sử.
-  // Thẻ vừa đúng vừa sai trong cùng một lượt thì câu sai "thắng".
+  // 正解かつ weak のカード -> known に戻す。missCount は履歴として残す。
+  // 同じ回で正解と不正解が混ざったカードは「不正解が勝つ」。
   for (const cardId of correctCards) {
     if (wrongCards.has(cardId)) continue
     if (reviews[cardId]?.status === 'weak') {
@@ -211,12 +213,12 @@ function togglePin(commentId: string, pinned: boolean) {
   })
 }
 
-/** Xoá localStorage và trả demo về đúng dữ liệu mẫu ban đầu. */
+/** localStorage を消して、最初のダミーデータに戻す。 */
 function reset() {
   try {
     window.localStorage.removeItem(STORAGE_KEY)
   } catch {
-    // bỏ qua
+    // 握りつぶす
   }
   current = seedState()
   for (const listener of listeners) listener()
@@ -227,11 +229,11 @@ export function useDemoStore() {
   return { state, markCard, submitQuiz, addComment, deleteComment, togglePin, reset }
 }
 
-// --- Số liệu dẫn xuất --------------------------------------------------------
+// --- 集計 --------------------------------------------------------------------
 
 export type TrackProgress = { done: number; total: number; needReview: number }
 
-/** Tiến độ đo bằng SỐ THẺ đã đụng tới (status khác 'new'), không phải số quiz. */
+/** 進捗は「触ったカードの枚数」(status が 'new' 以外) で測る。解いたクイズ数ではない。 */
 export function trackProgress(
   reviews: Record<string, ReviewEntry>,
   track: StudyTrack,
@@ -255,7 +257,7 @@ export type ClassProgressRow = {
   total: number
 }
 
-/** Thay cho RPC get_class_progress(): bạn thì tính thật, bạn cùng lớp thì cố định. */
+/** RPC get_class_progress() の代わり。自分は実測、クラスメイトは固定値。 */
 export function classProgressRows(reviews: Record<string, ReviewEntry>): ClassProgressRow[] {
   const rows: ClassProgressRow[] = []
 

@@ -17,18 +17,18 @@ export function DashboardView({ phases }: { phases: Phase[] }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Dashboard</h1>
+      <h1 className="text-2xl font-semibold">ダッシュボード</h1>
 
       <p className="rounded-xl border border-dashed bg-muted/40 p-3 text-sm text-muted-foreground">
-        Bản demo: toàn bộ nội dung là dữ liệu mẫu, không có đăng nhập và không có
-        database. Tiến độ bạn bấm được lưu trong trình duyệt này thôi — bấm{' '}
-        <span className="font-medium text-foreground">Đặt lại</span> ở góc trên để
-        về trạng thái ban đầu.
+        これはデモです。内容はすべてダミーデータで、ログインもデータベースも
+        ありません。操作した学習状況はこのブラウザだけに保存されます。右上の{' '}
+        <span className="font-medium text-foreground">リセット</span>{' '}
+        で初期状態に戻せます。
       </p>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Tiến độ của bạn</CardTitle>
+          <CardTitle className="text-base">あなたの進捗</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-5">
           {STUDY_TRACKS.map((track) => (
@@ -43,7 +43,7 @@ export function DashboardView({ phases }: { phases: Phase[] }) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Cả lớp trên timeline</CardTitle>
+          <CardTitle className="text-base">クラス全体のタイムライン</CardTitle>
         </CardHeader>
         <CardContent>
           <ProgressTimeline phases={phases} rows={rows} />
@@ -74,7 +74,7 @@ function TrackProgressBar({
 
       <div
         role="progressbar"
-        aria-label={`Tiến độ ${trackLabel(track)}`}
+        aria-label={`${trackLabel(track)}の進捗`}
         aria-valuenow={percent}
         aria-valuemin={0}
         aria-valuemax={100}
@@ -86,7 +86,7 @@ function TrackProgressBar({
       <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
         <span>{percent}%</span>
         {needReview > 0 ? (
-          <span className="font-medium text-amber-600">cần review: {needReview}</span>
+          <span className="font-medium text-amber-600">要復習: {needReview}</span>
         ) : null}
       </div>
     </div>

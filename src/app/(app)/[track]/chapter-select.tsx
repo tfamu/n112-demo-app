@@ -23,17 +23,17 @@ export function ChapterSelect({
 
   function onChange(id: string | null) {
     if (!id) return
-    // Ghi lựa chọn vào ?ch= để share link được và nút Back hoạt động đúng.
+    // 選択を ?ch= に入れる。URL を共有でき、ブラウザの戻るも正しく動く。
     router.push(`${pathname}?ch=${encodeURIComponent(id)}`)
   }
 
-  // Base UI Select cần `items` để SelectValue hiện label thay vì value (id).
+  // Base UI の Select は、SelectValue に id ではなくラベルを出すため items が要る。
   const items = chapters.map((c) => ({ value: c.id, label: c.label }))
 
   return (
     <Select items={items} value={value} onValueChange={onChange}>
       <SelectTrigger className="w-full">
-        <SelectValue placeholder="Chọn chương" />
+        <SelectValue placeholder="課を選択" />
       </SelectTrigger>
       <SelectContent>
         {chapters.map((c) => (

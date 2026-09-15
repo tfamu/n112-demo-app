@@ -4,7 +4,7 @@ import { findQuiz, questionsOfQuiz, trackOfChapter } from '@/data/content'
 import { shuffle } from '@/lib/shuffle'
 import { QuizRunner, type QuizQuestion } from '@/components/quiz-runner'
 
-// Thứ tự câu hỏi được trộn lại mỗi lần vào trang -> không prerender sẵn.
+// 開くたびに問題順を変えるので、事前レンダリングはしない。
 export const dynamic = 'force-dynamic'
 
 export default async function QuizPage({
@@ -16,8 +16,8 @@ export default async function QuizPage({
   const quiz = findQuiz(quizId)
   if (!quiz) notFound()
 
-  // Trộn ngẫu nhiên: các câu cùng card nằm liên tiếp thì đoán được đáp án.
-  // Đáp án đúng nằm trong bundle — bản thật chấm ở server, bản demo không có server.
+  // 順番をシャッフルする。同じカードから作った問題が並ぶと答えが読めてしまうため。
+  // なお正解はバンドルに含まれる。本番はサーバーで採点しているが、デモにサーバーはない。
   const questions: QuizQuestion[] = shuffle(
     questionsOfQuiz(quizId).map((q) => ({
       id: q.id,
@@ -33,13 +33,13 @@ export default async function QuizPage({
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
         <Link href={backHref} className="text-sm text-muted-foreground hover:underline">
-          ← Về chương
+          ← 課に戻る
         </Link>
         <h1 className="text-2xl font-semibold">{quiz.title}</h1>
       </div>
 
       {questions.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Quiz này chưa có câu hỏi.</p>
+        <p className="text-sm text-muted-foreground">このクイズには問題がありません。</p>
       ) : (
         <QuizRunner quizId={quiz.id} questions={questions} backHref={backHref} />
       )}

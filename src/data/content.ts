@@ -1,23 +1,26 @@
 import type { Book, Card, Chapter, Question, Quiz, StudyTrack } from './types'
 
 // ---------------------------------------------------------------------------
-// Dữ liệu giả cho bản demo. Nội dung tự soạn, không lấy từ giáo trình nào.
-// Mỗi mảng có 2 chương × 5 thẻ + 1 quiz 3 câu.
+// デモ用のダミーデータ。内容は自作で、市販の教材からの引用ではない。
+// 各分野に 2 課 × 5 枚のカードと、3 問のクイズを 1 つずつ用意している。
+//
+// カードの意味・例文訳・解説がベトナム語なのは、このアプリの利用者が
+// 「ベトナム語話者の N1 受験者」だから。学習内容そのものなので訳さない。
 // ---------------------------------------------------------------------------
 
 export const BOOKS: Book[] = [
-  { id: 'bk-grammar', track: 'grammar', title: 'N1 文法 — tuyển tập mẫu câu (demo)', sortOrder: 1 },
-  { id: 'bk-vocab', track: 'vocab', title: 'N1 語彙 — từ vựng chủ đề (demo)', sortOrder: 1 },
-  { id: 'bk-kanji', track: 'kanji', title: 'N1 漢字 — từ Hán tự thường gặp (demo)', sortOrder: 1 },
+  { id: 'bk-grammar', track: 'grammar', title: 'N1 文法 — 文型集（デモ）', sortOrder: 1 },
+  { id: 'bk-vocab', track: 'vocab', title: 'N1 語彙 — テーマ別語彙（デモ）', sortOrder: 1 },
+  { id: 'bk-kanji', track: 'kanji', title: 'N1 漢字 — 頻出漢字語（デモ）', sortOrder: 1 },
 ]
 
 export const CHAPTERS: Chapter[] = [
-  { id: 'ch-g1', bookId: 'bk-grammar', code: '1課', title: 'Bất chấp · phớt lờ', sortOrder: 1 },
-  { id: 'ch-g2', bookId: 'bk-grammar', code: '2課', title: 'Đánh giá · xu hướng', sortOrder: 2 },
-  { id: 'ch-v1', bookId: 'bk-vocab', code: '第1部', title: 'Từ tả trạng thái', sortOrder: 1 },
-  { id: 'ch-v2', bookId: 'bk-vocab', code: '第2部', title: 'Động từ · tính từ khó', sortOrder: 2 },
-  { id: 'ch-k1', bookId: 'bk-kanji', code: '第1回', title: 'Hán tự trong bản tin', sortOrder: 1 },
-  { id: 'ch-k2', bookId: 'bk-kanji', code: '第2回', title: 'Hán tự trong văn bản công ty', sortOrder: 2 },
+  { id: 'ch-g1', bookId: 'bk-grammar', code: '1課', title: '逆境・無視を表す文型', sortOrder: 1 },
+  { id: 'ch-g2', bookId: 'bk-grammar', code: '2課', title: '評価・傾向を表す文型', sortOrder: 2 },
+  { id: 'ch-v1', bookId: 'bk-vocab', code: '第1部', title: '状態を表す語', sortOrder: 1 },
+  { id: 'ch-v2', bookId: 'bk-vocab', code: '第2部', title: '間違えやすい動詞・形容詞', sortOrder: 2 },
+  { id: 'ch-k1', bookId: 'bk-kanji', code: '第1回', title: 'ニュースに出る漢字', sortOrder: 1 },
+  { id: 'ch-k2', bookId: 'bk-kanji', code: '第2回', title: 'ビジネス文書の漢字', sortOrder: 2 },
 ]
 
 export const CARDS: Card[] = [
@@ -387,12 +390,12 @@ export const CARDS: Card[] = [
 ]
 
 export const QUIZZES: Quiz[] = [
-  { id: 'qz-g1', chapterId: 'ch-g1', title: 'Quiz 1課 — chọn mẫu câu đúng', sortOrder: 1 },
-  { id: 'qz-g2', chapterId: 'ch-g2', title: 'Quiz 2課 — chọn mẫu câu đúng', sortOrder: 1 },
-  { id: 'qz-v1', chapterId: 'ch-v1', title: 'Quiz 第1部 — điền từ', sortOrder: 1 },
-  { id: 'qz-v2', chapterId: 'ch-v2', title: 'Quiz 第2部 — điền từ', sortOrder: 1 },
-  { id: 'qz-k1', chapterId: 'ch-k1', title: 'Quiz 第1回 — cách đọc', sortOrder: 1 },
-  { id: 'qz-k2', chapterId: 'ch-k2', title: 'Quiz 第2回 — cách đọc', sortOrder: 1 },
+  { id: 'qz-g1', chapterId: 'ch-g1', title: '1課クイズ — 文型を選ぶ', sortOrder: 1 },
+  { id: 'qz-g2', chapterId: 'ch-g2', title: '2課クイズ — 文型を選ぶ', sortOrder: 1 },
+  { id: 'qz-v1', chapterId: 'ch-v1', title: '第1部クイズ — 語を入れる', sortOrder: 1 },
+  { id: 'qz-v2', chapterId: 'ch-v2', title: '第2部クイズ — 語を入れる', sortOrder: 1 },
+  { id: 'qz-k1', chapterId: 'ch-k1', title: '第1回クイズ — 読み方', sortOrder: 1 },
+  { id: 'qz-k2', chapterId: 'ch-k2', title: '第2回クイズ — 読み方', sortOrder: 1 },
 ]
 
 export const QUESTIONS: Question[] = [
@@ -529,7 +532,7 @@ export const QUESTIONS: Question[] = [
     id: 'q-k1-1',
     quizId: 'qz-k1',
     cardId: 'cd-k1-2',
-    prompt: '現場の状況を「把握」する。\nCách đọc của 把握 là?',
+    prompt: '現場の状況を「把握」する。\n「把握」の読み方は？',
     choices: ['はあく', 'はにぎ', 'ひあく', 'はいあく'],
     answerIndex: 0,
     explanation: '把握（はあく）— 「把」 đọc âm on là 「は」.',
@@ -539,7 +542,7 @@ export const QUESTIONS: Question[] = [
     id: 'q-k1-2',
     quizId: 'qz-k1',
     cardId: 'cd-k1-4',
-    prompt: '任務を「遂行」する。\nCách đọc của 遂行 là?',
+    prompt: '任務を「遂行」する。\n「遂行」の読み方は？',
     choices: ['ついこう', 'すいこう', 'とこう', 'すいぎょう'],
     answerIndex: 1,
     explanation: '遂行（すいこう）. Chú ý 「遂に（ついに）」 đọc khác.',
@@ -549,7 +552,7 @@ export const QUESTIONS: Question[] = [
     id: 'q-k1-3',
     quizId: 'qz-k1',
     cardId: 'cd-k1-5',
-    prompt: '「頻繁」に連絡を取る。\nCách đọc của 頻繁 là?',
+    prompt: '「頻繁」に連絡を取る。\n「頻繁」の読み方は？',
     choices: ['ひんぱん', 'ひんばん', 'はんぱん', 'ひんぽん'],
     answerIndex: 0,
     explanation: '頻繁（ひんぱん）— âm 「ぱ」 chứ không phải 「ば」.',
@@ -561,7 +564,7 @@ export const QUESTIONS: Question[] = [
     id: 'q-k2-1',
     quizId: 'qz-k2',
     cardId: 'cd-k2-1',
-    prompt: '地域社会に「貢献」する。\nCách đọc của 貢献 là?',
+    prompt: '地域社会に「貢献」する。\n「貢献」の読み方は？',
     choices: ['こうけん', 'こうこん', 'くけん', 'こうげん'],
     answerIndex: 0,
     explanation: '貢献（こうけん）.',
@@ -571,7 +574,7 @@ export const QUESTIONS: Question[] = [
     id: 'q-k2-2',
     quizId: 'qz-k2',
     cardId: 'cd-k2-4',
-    prompt: '「迅速」に対応する。\nCách đọc của 迅速 là?',
+    prompt: '「迅速」に対応する。\n「迅速」の読み方は？',
     choices: ['じんそく', 'しんそく', 'じんぞく', 'じんそう'],
     answerIndex: 0,
     explanation: '迅速（じんそく）.',
@@ -581,7 +584,7 @@ export const QUESTIONS: Question[] = [
     id: 'q-k2-3',
     quizId: 'qz-k2',
     cardId: 'cd-k2-3',
-    prompt: '「累積」した赤字。\nCách đọc của 累積 là?',
+    prompt: '「累積」した赤字。\n「累積」の読み方は？',
     choices: ['るいせき', 'るいし', 'らいせき', 'るいぜき'],
     answerIndex: 0,
     explanation: '累積（るいせき）.',
@@ -589,7 +592,7 @@ export const QUESTIONS: Question[] = [
   },
 ]
 
-// --- Truy vấn (thay cho các câu select của Supabase ở bản thật) ---------------
+// --- 参照系（本番では Supabase の select に当たる部分） -----------------------
 
 export function chaptersOfTrack(track: StudyTrack): Chapter[] {
   const bookIds = BOOKS.filter((b) => b.track === track)
@@ -623,12 +626,12 @@ export function trackOfChapter(chapterId: string): StudyTrack | undefined {
   return BOOKS.find((b) => b.id === chapter?.bookId)?.track
 }
 
-/** Tổng số thẻ của một mảng — mẫu số của thanh tiến độ. */
+/** 分野ごとのカード総数 — 進捗バーの分母。 */
 export function cardCountOfTrack(track: StudyTrack): number {
   return CARDS.filter((c) => trackOfChapter(c.chapterId) === track).length
 }
 
-/** cardId -> track, dùng khi quy tiến độ về từng mảng. */
+/** cardId から分野を引く。進捗を分野別に集計するときに使う。 */
 export function trackOfCard(cardId: string): StudyTrack | undefined {
   const card = CARDS.find((c) => c.id === cardId)
   return card ? trackOfChapter(card.chapterId) : undefined

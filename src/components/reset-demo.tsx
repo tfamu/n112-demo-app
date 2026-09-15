@@ -4,7 +4,7 @@ import { RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useDemoStore } from '@/lib/demo-store'
 
-/** Xoá localStorage và trả demo về đúng dữ liệu mẫu ban đầu. */
+/** localStorage を消して、デモを最初のダミーデータに戻す。 */
 export function ResetDemoButton() {
   const { reset } = useDemoStore()
 
@@ -14,13 +14,13 @@ export function ResetDemoButton() {
       variant="ghost"
       size="sm"
       onClick={() => {
-        if (!confirm('Đặt lại toàn bộ tiến độ và bình luận của bản demo?')) return
+        if (!confirm('デモの学習状況とコメントをすべて初期状態に戻しますか？')) return
         reset()
       }}
-      aria-label="Đặt lại dữ liệu demo"
+      aria-label="デモデータをリセット"
     >
       <RotateCcw className="size-4" />
-      <span className="hidden sm:inline">Đặt lại</span>
+      <span className="hidden sm:inline">リセット</span>
     </Button>
   )
 }

@@ -3,7 +3,7 @@ import { STUDY_TRACKS, type StudyTrack } from '@/data/types'
 export { STUDY_TRACKS }
 export type { StudyTrack }
 
-// Nhãn tiếng Nhật chỉ ở tầng hiển thị; dữ liệu luôn dùng key tiếng Anh.
+// 日本語ラベルは表示層だけのもの。データ側のキーは常に英語。
 const TRACK_LABELS: Record<StudyTrack, string> = {
   grammar: '文法',
   vocab: '語彙',

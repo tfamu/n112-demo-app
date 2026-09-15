@@ -10,7 +10,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <Link href="/dashboard" className="flex items-center gap-2 text-base font-semibold">
             Happy Class
             <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
-              demo
+              デモ
             </span>
           </Link>
           <DesktopNav />
@@ -19,14 +19,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               href="/admin"
               className="rounded-md px-2 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              Admin
+              管理
             </Link>
             <ResetDemoButton />
           </div>
         </div>
       </header>
 
-      {/* pb-24 để bottom tab (mobile) không che nội dung; desktop bỏ padding thừa */}
+      {/* pb-24 はスマホの下タブに内容が隠れないため。PC では余白を戻す */}
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6 pb-24 md:pb-6">
         {children}
       </main>

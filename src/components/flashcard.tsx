@@ -7,12 +7,12 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useDemoStore } from '@/lib/demo-store'
 
-// Chấm màu theo trạng thái. 'new' (hoặc chưa có review) là màu xám.
+// 状態を表す色つきの丸。'new'（未登録も含む）はグレー。
 const STATUS_META: Record<ReviewStatus, { label: string; dot: string }> = {
-  new: { label: 'Mới', dot: 'bg-gray-400' },
-  learning: { label: 'Chưa thuộc', dot: 'bg-[#FCD34D]' },
-  known: { label: 'Thuộc', dot: 'bg-[#86EFAC]' },
-  weak: { label: 'Yếu', dot: 'bg-[#FCA5A5]' },
+  new: { label: '未学習', dot: 'bg-gray-400' },
+  learning: { label: '学習中', dot: 'bg-[#FCD34D]' },
+  known: { label: '覚えた', dot: 'bg-[#86EFAC]' },
+  weak: { label: '要復習', dot: 'bg-[#FCA5A5]' },
 }
 
 export function FlashcardDeck({ cards }: { cards: Card[] }) {
@@ -21,7 +21,8 @@ export function FlashcardDeck({ cards }: { cards: Card[] }) {
   const [flipped, setFlipped] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
 
-  // Đổi chương -> deck remount qua key={selectedId} ở page, state tự reset.
+  // 課を切り替えるとページ側の key={selectedId} でデッキごと作り直されるので、
+  // ここの state は自動的にリセットされる。
   const card = cards[index]
   if (!card) return null
 
@@ -30,7 +31,7 @@ export function FlashcardDeck({ cards }: { cards: Card[] }) {
 
   function go(next: number) {
     setIndex((i) => Math.min(Math.max(i + next, 0), cards.length - 1))
-    setFlipped(false) // reset trạng thái lật khi đổi thẻ
+    setFlipped(false) // カードを変えたらめくった状態を戻す
     setMessage(null)
   }
 
@@ -38,7 +39,7 @@ export function FlashcardDeck({ cards }: { cards: Card[] }) {
     const res = markCard(cardId, next)
     setMessage(
       res.blocked
-        ? 'Thẻ này đang "cần review" vì bạn làm sai ở quiz — làm đúng ở quiz để bỏ đánh dấu.'
+        ? 'このカードはクイズで間違えたため「要復習」です。クイズで正解すると解除されます。'
         : null,
     )
   }
@@ -46,7 +47,7 @@ export function FlashcardDeck({ cards }: { cards: Card[] }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="group/card relative transition-transform duration-200 [perspective:1000px] hover:-translate-y-1">
-        {/* Chấm trạng thái ở trên cùng, giữa card — không xoay theo card, hover ra tooltip */}
+        {/* 状態の丸はカード上辺の中央。カードと一緒に回らず、hover でラベルが出る */}
         <div className="group absolute -top-2 left-1/2 z-10 -translate-x-1/2">
           <span
             className={cn(
@@ -54,7 +55,7 @@ export function FlashcardDeck({ cards }: { cards: Card[] }) {
               dotMeta.dot,
             )}
             role="img"
-            aria-label={`Trạng thái: ${dotMeta.label}`}
+            aria-label={`状態: ${dotMeta.label}`}
           />
           <span
             role="tooltip"
@@ -67,12 +68,12 @@ export function FlashcardDeck({ cards }: { cards: Card[] }) {
         <button
           type="button"
           onClick={() => setFlipped((f) => !f)}
-          aria-label="Lật thẻ"
+          aria-label="カードをめくる"
           aria-pressed={flipped}
           className="relative w-full min-h-72 [transform-style:preserve-3d] transition-transform duration-[400ms]"
           style={{ transform: flipped ? 'rotateY(180deg)' : undefined }}
         >
-          {/* Mặt trước: chỉ 文型 / 語彙 — cách đọc để dành cho mặt sau */}
+          {/* 表: 文型・語彙だけ。読み方は裏に回す */}
           <span
             aria-hidden={flipped}
             className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-[20px] border bg-card p-6 text-center shadow-sm transition-shadow [backface-visibility:hidden] group-hover/card:shadow-xl"
@@ -80,10 +81,10 @@ export function FlashcardDeck({ cards }: { cards: Card[] }) {
             <span className="font-jp text-3xl font-semibold text-card-foreground">
               {card.front}
             </span>
-            <span className="mt-2 text-xs text-muted-foreground">Chạm để lật</span>
+            <span className="mt-2 text-xs text-muted-foreground">タップでめくる</span>
           </span>
 
-          {/* Mặt sau: cách đọc · âm Hán + ý nghĩa + ví dụ */}
+          {/* 裏: 読み方・漢越音 + 意味 + 例文 */}
           <span
             aria-hidden={!flipped}
             className="absolute inset-0 flex flex-col gap-3 overflow-y-auto rounded-[20px] border bg-card p-6 text-left shadow-sm transition-shadow [backface-visibility:hidden] [transform:rotateY(180deg)] group-hover/card:shadow-xl"
@@ -112,15 +113,15 @@ export function FlashcardDeck({ cards }: { cards: Card[] }) {
         </button>
       </div>
 
-      {/* Panel extra: chỉ hiện khi đã lật */}
+      {/* 補足パネル: めくったときだけ出す */}
       {flipped && card.extra ? (
         <div className="rounded-lg border bg-muted/40 p-4 text-sm">
-          <p className="mb-2 text-xs font-semibold text-muted-foreground">Thông tin thêm</p>
+          <p className="mb-2 text-xs font-semibold text-muted-foreground">補足</p>
           <div className="whitespace-pre-line">{card.extra}</div>
         </div>
       ) : null}
 
-      {/* Đã thuộc / Chưa thuộc: chỉ khi đã lật (mặt back). Nút ≥44px cho ngón cái. */}
+      {/* 覚えた / まだ: 裏面のときだけ表示。親指で押せるよう 44px 以上。 */}
       {flipped ? (
         <div className="flex flex-col gap-2">
           <div className="flex gap-3">
@@ -130,7 +131,7 @@ export function FlashcardDeck({ cards }: { cards: Card[] }) {
               onClick={() => mark(card.id, 'learning')}
               className="min-h-11 flex-1"
             >
-              Chưa thuộc
+              まだ
             </Button>
             <Button
               type="button"
@@ -138,26 +139,24 @@ export function FlashcardDeck({ cards }: { cards: Card[] }) {
               onClick={() => mark(card.id, 'known')}
               className="min-h-11 flex-1"
             >
-              Đã thuộc
+              覚えた
             </Button>
           </div>
           {status === 'weak' ? (
-            <p className="text-xs font-medium text-amber-600">
-              Đang cần review (làm sai quiz)
-            </p>
+            <p className="text-xs font-medium text-amber-600">要復習（クイズで間違えた）</p>
           ) : null}
           {message ? <p className="text-xs text-muted-foreground">{message}</p> : null}
         </div>
       ) : null}
 
-      {/* Điều hướng: nút hai bên, đủ to cho ngón cái (≥44px) */}
+      {/* 前後の移動: カードの下に左右配置、親指で押せる大きさ（44px 以上） */}
       <div className="flex items-center justify-between gap-4">
         <Button
           type="button"
           variant="outline"
           onClick={() => go(-1)}
           disabled={index === 0}
-          aria-label="Thẻ trước"
+          aria-label="前のカード"
           className="size-11"
         >
           <ChevronLeft className="size-5" />
@@ -170,7 +169,7 @@ export function FlashcardDeck({ cards }: { cards: Card[] }) {
           variant="outline"
           onClick={() => go(1)}
           disabled={index === cards.length - 1}
-          aria-label="Thẻ sau"
+          aria-label="次のカード"
           className="size-11"
         >
           <ChevronRight className="size-5" />

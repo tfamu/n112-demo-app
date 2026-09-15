@@ -11,14 +11,14 @@ const NAV_ITEMS: readonly NavItem[] = [
   { href: '/grammar', label: '文法', icon: BookText },
   { href: '/vocab', label: '語彙', icon: Languages },
   { href: '/kanji', label: '漢字', icon: PenLine },
-  { href: '/dashboard', label: 'Dashboard', icon: BarChart3 },
+  { href: '/dashboard', label: '進捗', icon: BarChart3 },
 ]
 
 function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 
-// Desktop: link ngang trong header.
+// PC: ヘッダー内の横並びリンク。
 export function DesktopNav() {
   const pathname = usePathname()
   return (
@@ -41,7 +41,7 @@ export function DesktopNav() {
   )
 }
 
-// Mobile: bottom tab cố định, mỗi tab ≥44px cho ngón cái.
+// スマホ: 画面下に固定するタブ。親指で押せるよう 1 つ 44px 以上。
 export function MobileTabs() {
   const pathname = usePathname()
   return (

@@ -26,14 +26,14 @@ export function AdminTable() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Tiến độ cả lớp</CardTitle>
+        <CardTitle className="text-base">クラスの進捗</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
           <table className="w-full min-w-md border-collapse text-sm">
             <thead>
               <tr className="border-b text-left">
-                <th className="py-2 pr-4 font-medium">Member</th>
+                <th className="py-2 pr-4 font-medium">メンバー</th>
                 {STUDY_TRACKS.map((t) => (
                   <th key={t} className="py-2 pr-4 font-medium">
                     {trackLabel(t)}

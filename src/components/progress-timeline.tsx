@@ -10,13 +10,13 @@ type Member = {
   displayName: string
   avatarIcon: string
   ratios: Partial<Record<StudyTrack, number>>
-  /** 0..1 trên toàn trục */
+  /** 軸全体を 0..1 とした位置 */
   position: number
   phaseName: string
 }
 
-// Bỏ qua target không phải mảng đang học (phase thi thử): giữ lại sẽ chia cho
-// total = 0 và kẹt cả lớp ở phase đó vĩnh viễn.
+// 学習中の分野以外の目標（模試フェーズなど）は落とす。残すと分母 0 で割ることに
+// なり、クラス全員がそのフェーズから永久に動かなくなる。
 function toTargets(targets: Targets): Targets {
   const out: Targets = {}
   for (const track of STUDY_TRACKS) {
@@ -30,10 +30,10 @@ function clamp01(n: number): number {
   return Math.min(Math.max(n, 0), 1)
 }
 
-// dd/MM từ chuỗi date 'YYYY-MM-DD' — không qua Date() để khỏi lệch múi giờ.
+// 'YYYY-MM-DD' から M/D を作る。Date() を通さないのはタイムゾーンでずれないため。
 function shortDate(deadline: string): string {
   const [, month, day] = deadline.split('-')
-  return month && day ? `${day}/${month}` : deadline
+  return month && day ? `${Number(month)}/${Number(day)}` : deadline
 }
 
 function buildMembers(rows: ClassProgressRow[], phases: Phase[]): Member[] {
@@ -58,25 +58,25 @@ function buildMembers(rows: ClassProgressRow[], phases: Phase[]): Member[] {
   const parsed = phases.map((p) => ({ phase: p, targets: toTargets(p.targets) }))
 
   for (const m of byUser.values()) {
-    // Phase CHƯA đạt đầu tiên là đoạn chứa marker; vị trí trong đoạn là mức đạt
-    // trung bình so với các target của phase đó.
+    // マーカーが乗る区間は「まだ達成していない最初のフェーズ」。区間内の位置は
+    // そのフェーズの各目標に対する達成度の平均。
     let index = parsed.length - 1
     let offset = 1
     for (let i = 0; i < parsed.length; i++) {
       const entries = Object.entries(parsed[i].targets) as [StudyTrack, number][]
-      // Phase không có target đo được (Phase 4: thi thử) -> không bao giờ đạt,
-      // marker dừng ở đầu đoạn đó thay vì nhảy tới đích.
+      // 測れる目標がないフェーズ（フェーズ4: 模試）は永遠に達成にならないので、
+      // ゴールまで飛ばさずその区間の先頭で止める。
       if (entries.length === 0) {
         index = i
         offset = 0
         break
       }
       const per = entries.map(([t, target]) => clamp01((m.ratios[t] ?? 0) / target))
-      // Qua được phase thì phải đạt ĐỦ mọi target...
+      // フェーズを越えるには全部の目標を満たす必要がある…
       if (per.every((r) => r >= 1)) continue
       index = i
-      // ...nhưng vị trí trong đoạn lấy TRUNG BÌNH, không lấy min: xong hẳn một
-      // track phải thấy marker nhích, nếu không cả buổi học trông như đứng yên.
+      // …が、区間内の位置は最小値ではなく平均を取る。1 分野を終わらせたら
+      // マーカーが動かないと、授業中ずっと止まって見えてしまうため。
       offset = per.reduce((a, b) => a + b, 0) / per.length
       break
     }
@@ -87,7 +87,7 @@ function buildMembers(rows: ClassProgressRow[], phases: Phase[]): Member[] {
   return [...byUser.values()].sort((a, b) => b.position - a.position)
 }
 
-// Marker gần nhau thì xếp chồng thành nhiều làn để không đè lên nhau.
+// 近い位置のマーカーはレーンを分けて重ならないようにする。
 function assignLanes(members: Member[]): { member: Member; lane: number }[] {
   const placed: { member: Member; lane: number }[] = []
   for (const member of members) {
@@ -111,21 +111,21 @@ export function ProgressTimeline({
   rows: ClassProgressRow[]
 }) {
   if (phases.length === 0) {
-    return <p className="text-sm text-muted-foreground">Chưa có phase nào.</p>
+    return <p className="text-sm text-muted-foreground">フェーズがありません。</p>
   }
 
   const members = buildMembers(rows, phases)
   const placed = assignLanes(members)
-  // Chặn số làn: cả lớp cùng đứng ở mốc 0 thì làn tăng vô hạn và ăn hết chỗ của
-  // nhãn phase trên mobile. Vượt trần thì marker chồng nhẹ lên nhau, chấp nhận được.
+  // レーン数に上限を設ける。全員が 0 地点に固まるとレーンが増え続け、スマホでは
+  // フェーズ名の場所を食い潰す。上限を超えたら多少重なるがそれは許容する。
   const laneCount = Math.min(Math.max(1, ...placed.map((p) => p.lane + 1)), 4)
   const mobileLanes = Math.min(laneCount, 3)
   const n = phases.length
 
   return (
     <div className="flex flex-col gap-4">
-      {/* ---------- Mobile: trục DỌC (mặc định) ---------- */}
-      {/* Cột trái chừa chỗ cho các làn marker, trục và nhãn phase nằm bên phải. */}
+      {/* ---------- スマホ: 縦軸（既定） ---------- */}
+      {/* 左の列をマーカーのレーンに使い、軸とフェーズ名は右に置く。 */}
       <div className="flex gap-2 md:hidden" style={{ paddingTop: '8px' }}>
         <div className="relative shrink-0" style={{ width: `${mobileLanes * 34}px` }}>
           {placed.map(({ member, lane }) => (
@@ -159,14 +159,14 @@ export function ProgressTimeline({
         </div>
       </div>
 
-      {/* ---------- Desktop: trục NGANG ---------- */}
-      {/* px-14 = nửa bề rộng nhãn (w-24) + dư, để nhãn Phase 4 ở mốc 100% không tràn. */}
+      {/* ---------- PC: 横軸 ---------- */}
+      {/* px-14 はラベル幅(w-24)の半分 + 余白。100% 地点のフェーズ4 がはみ出さないように。 */}
       <div className="hidden px-14 md:block">
         <div className="relative" style={{ height: `${laneCount * 34 + 84}px` }}>
           <div className="absolute inset-x-0 h-0.5 rounded bg-border" style={{ bottom: '62px' }} />
 
-          {/* Chấm neo thẳng vào trục, KHÔNG xếp chung cột với nhãn: nhãn dài ngắn
-              khác nhau sẽ đẩy chấm lệch khỏi đường kẻ. */}
+          {/* 丸は軸に直接置く。ラベルと同じ要素にまとめると、ラベルの長さの違いで
+              丸が線からずれてしまう。 */}
           {phases.map((p, i) => (
             <span
               key={`dot-${p.id}`}
@@ -201,8 +201,9 @@ export function ProgressTimeline({
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Marker nằm trong đoạn của phase chưa đạt; vị trí trong đoạn là mức đạt trung
-        bình so với mục tiêu của phase đó. Qua được phase thì phải đạt đủ mọi mục tiêu.
+        マーカーは「まだ達成していないフェーズ」の区間に置かれ、区間内の位置はその
+        フェーズの目標に対する達成度の平均です。次のフェーズへ進むには、目標を
+        すべて満たす必要があります。
       </p>
     </div>
   )
@@ -215,8 +216,8 @@ function PhaseLabel({ phase, center }: { phase: Phase; center?: boolean }) {
     <div
       className={cn(
         'flex flex-col leading-tight',
-        // Khoá bề rộng để nhãn xuống dòng thay vì tràn: desktop 4 nhãn sát nhau,
-        // mobile chỉ còn ~180px sau cột marker.
+        // 幅を固定して折り返させる。PC ではラベルが 4 つ並び、スマホでは
+        // マーカー列のあと 180px ほどしか残らないため。
         center ? 'w-24 items-center text-center' : 'w-40',
       )}
     >
@@ -226,15 +227,15 @@ function PhaseLabel({ phase, center }: { phase: Phase; center?: boolean }) {
       <span className="text-[11px] leading-snug text-muted-foreground">
         {entries.length > 0
           ? entries.map(([t, v]) => `${trackLabel(t)} ${Math.round(v * 100)}%`).join(' · ')
-          : 'thi thử'}
+          : '模試'}
       </span>
     </div>
   )
 }
 
 function MemberMarker({ member }: { member: Member }) {
-  // Giá trị dạng 'ti-*' (mặc định của schema bản thật) thì fallback chữ cái đầu,
-  // còn lại in thẳng (emoji).
+  // 'ti-*'（本番スキーマの既定値）は頭文字にフォールバック、
+  // それ以外は絵文字としてそのまま出す。
   const label = member.avatarIcon.startsWith('ti-')
     ? member.displayName.slice(0, 1).toUpperCase()
     : member.avatarIcon
@@ -245,7 +246,7 @@ function MemberMarker({ member }: { member: Member }) {
 
   return (
     <span
-      title={`${member.displayName} — ${member.phaseName}, TB ${percent}%`}
+      title={`${member.displayName} — ${member.phaseName}、平均 ${percent}%`}
       className="flex size-8 items-center justify-center rounded-full border bg-background text-sm shadow-sm"
     >
       {label}

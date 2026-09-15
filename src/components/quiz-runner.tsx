@@ -24,7 +24,7 @@ export function QuizRunner({
 
   const submitted = result !== null
   const allAnswered = questions.every((q) => q.id in answers)
-  // Map kết quả theo questionId để tra nhanh khi render mặt đã chấm.
+  // 採点結果は questionId で引けるようにしておく。
   const resultById = new Map((result?.results ?? []).map((r) => [r.questionId, r]))
 
   function choose(questionId: string, index: number) {
@@ -41,7 +41,7 @@ export function QuizRunner({
     <div className="flex flex-col gap-4">
       {submitted && result ? (
         <div className="rounded-xl border bg-card p-4 text-center">
-          <p className="text-sm text-muted-foreground">Kết quả</p>
+          <p className="text-sm text-muted-foreground">結果</p>
           <p className="text-3xl font-semibold tabular-nums">
             {result.score} / {result.total}
           </p>
@@ -62,7 +62,7 @@ export function QuizRunner({
                 {q.choices.map((choice, ci) => {
                   const isChosen = chosen === ci
                   const isCorrect = graded?.correctIndex === ci
-                  // Sau khi chấm: xanh = đáp án đúng, đỏ = mình chọn nhưng sai.
+                  // 採点後: 緑 = 正解、赤 = 自分が選んで外した選択肢。
                   const state = !submitted
                     ? isChosen
                       ? 'chosen'
@@ -114,16 +114,16 @@ export function QuizRunner({
           className="min-h-11"
         >
           {allAnswered
-            ? 'Nộp bài'
-            : `Còn ${questions.length - Object.keys(answers).length} câu chưa trả lời`}
+            ? '採点する'
+            : `未回答 ${questions.length - Object.keys(answers).length} 問`}
         </Button>
       ) : (
         <div className="flex gap-3">
           <Button type="button" variant="outline" onClick={retry} className="min-h-11 flex-1">
-            Làm lại
+            もう一度
           </Button>
           <Button render={<Link href={backHref} />} nativeButton={false} className="min-h-11 flex-1">
-            Về chương
+            課に戻る
           </Button>
         </div>
       )}

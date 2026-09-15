@@ -4,12 +4,12 @@ import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
-  subsets: ["latin", "vietnamese"],
+  subsets: ["latin", "vietnamese"], // カードの意味・例文訳はベトナム語
 });
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto-jp",
-  subsets: ["latin"], // glyph 日本語 đi kèm mặc định; không có subset tên "japanese"
+  subsets: ["latin"], // 日本語グリフは既定で含まれる。"japanese" というサブセット名はない
 });
 
 const geistMono = Geist_Mono({
@@ -18,9 +18,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Happy Class — demo",
+  title: "Happy Class — デモ",
   description:
-    "Bản demo của app luyện thi JLPT N1 (文法 / 語彙 / 漢字) — dữ liệu mẫu, không cần đăng nhập.",
+    "JLPT N1（文法 / 語彙 / 漢字）学習アプリのデモ。ダミーデータのみ、ログイン不要。",
 };
 
 export default function RootLayout({
@@ -30,7 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="vi"
+      lang="ja"
       className={`${inter.variable} ${notoSansJP.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>

@@ -1,6 +1,6 @@
-// Kiểu dữ liệu của bản demo. Giữ đúng hình dạng các bảng của bản thật
+// デモ版のデータ型。本番と同じテーブル構成
 // (books / chapters / cards / quizzes / questions / profiles / phases / comments)
-// nhưng đặt tên field theo camelCase vì ở đây không có Postgres.
+// をそのまま写しているが、ここには Postgres がないのでフィールド名は camelCase。
 
 export const STUDY_TRACKS = ['grammar', 'vocab', 'kanji'] as const
 export type StudyTrack = (typeof STUDY_TRACKS)[number]
@@ -30,7 +30,7 @@ export type Card = {
   chapterId: string
   front: string
   reading: string | null
-  /** Âm Hán Việt — chỉ dùng cho thẻ 漢字, thẻ khác để chuỗi rỗng. */
+  /** 漢越音（ベトナム語話者向けの音読みの手がかり）。漢字カード以外は空文字。 */
   hanViet: string
   back: string
   examples: Example[]
@@ -48,7 +48,7 @@ export type Quiz = {
 export type Question = {
   id: string
   quizId: string
-  /** Cầu nối quiz <-> flashcard: trả lời sai thì thẻ này bị đánh dấu "cần review". */
+  /** クイズとカードの橋渡し。間違えるとこのカードが「要復習」になる。 */
   cardId: string | null
   prompt: string
   choices: string[]
@@ -69,7 +69,7 @@ export type Phase = {
   name: string
   /** 'YYYY-MM-DD' */
   deadline: string
-  /** Phase thi thử không có target đo được -> object rỗng. */
+  /** 模試フェーズには測れる目標がないので空オブジェクト。 */
   targets: Partial<Record<StudyTrack, number>>
 }
 
@@ -78,7 +78,7 @@ export type Comment = {
   chapterId: string
   userId: string
   body: string
-  isPinned: boolean
-  /** ISO string. */
+  /** ISO 文字列。 */
   createdAt: string
+  isPinned: boolean
 }

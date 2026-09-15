@@ -24,7 +24,7 @@ export default async function TrackPage({
     label: `${c.code} · ${c.title}`,
   }))
 
-  // Chương đang chọn: từ ?ch=, nếu không hợp lệ thì lấy chương đầu.
+  // 表示する課は ?ch= から。値が不正なら最初の課にする。
   const selectedId = ch && chapters.some((c) => c.id === ch) ? ch : chapters[0]?.id
 
   const cards = selectedId ? cardsOfChapter(selectedId) : []
@@ -38,13 +38,13 @@ export default async function TrackPage({
       </div>
 
       {options.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Chưa có chương nào cho mảng này.</p>
+        <p className="text-sm text-muted-foreground">この分野にはまだ課がありません。</p>
       ) : (
-        // Mobile: 1 cột, bình luận nằm dưới card. Desktop: bình luận ở rìa phải.
+        // スマホ: 1 カラムでコメントはカードの下。PC: コメントを右端に置く。
         <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_16rem]">
           <div className="flex flex-col gap-4">
             {cards.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Chương này chưa có thẻ nào.</p>
+              <p className="text-sm text-muted-foreground">この課にはまだカードがありません。</p>
             ) : (
               <FlashcardDeck key={selectedId} cards={cards} />
             )}

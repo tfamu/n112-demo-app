@@ -1,14 +1,14 @@
 import type { Comment, Phase, Profile, ReviewStatus, StudyTrack } from './types'
 
 // ---------------------------------------------------------------------------
-// "Lớp học" giả. Bản thật lấy những thứ này từ bảng profiles / phases / comments
-// và RPC get_class_progress().
+// ダミーの「クラス」。本番ではこれらを profiles / phases / comments テーブルと
+// RPC get_class_progress() から取得している。
 // ---------------------------------------------------------------------------
 
-/** Người đang xem demo. Để role = admin cho xem được cả trang /admin. */
+/** デモを見ている人。/admin も見られるように role は admin にしてある。 */
 export const DEMO_USER: Profile = {
   id: 'u-demo',
-  displayName: 'Bạn (demo)',
+  displayName: 'あなた（デモ）',
   avatarIcon: '🙂',
   role: 'admin',
 }
@@ -17,12 +17,12 @@ export const CLASSMATES: Profile[] = [
   { id: 'u-linh', displayName: 'Linh', avatarIcon: '🍀', role: 'member' },
   { id: 'u-mai', displayName: 'Mai', avatarIcon: '🌸', role: 'member' },
   { id: 'u-hung', displayName: 'Hùng', avatarIcon: '🐧', role: 'member' },
-  // avatar_icon mặc định của schema là 'ti-user' -> để một người dùng giá trị này
-  // cho thấy nhánh fallback "chữ cái đầu" của marker.
+  // 本番スキーマの avatar_icon の既定値は 'ti-user'。マーカーの
+  // 「頭文字にフォールバックする」分岐を見せるため 1 人だけこの値にしている。
   { id: 'u-thao', displayName: 'Thảo', avatarIcon: 'ti-user', role: 'member' },
 ]
 
-/** Số thẻ đã học của từng bạn, cố định — chỉ tiến độ của bạn mới thay đổi. */
+/** クラスメイトの学習済み枚数は固定。動くのは自分の進捗だけ。 */
 export const CLASSMATE_DONE: Record<string, Record<StudyTrack, number>> = {
   'u-linh': { grammar: 10, vocab: 10, kanji: 8 },
   'u-mai': { grammar: 10, vocab: 6, kanji: 4 },
@@ -31,14 +31,14 @@ export const CLASSMATE_DONE: Record<string, Record<StudyTrack, number>> = {
 }
 
 export const PHASES: Phase[] = [
-  { id: 1, name: 'Phase 1', deadline: '2026-08-31', targets: { grammar: 1, vocab: 0.4, kanji: 0.4 } },
-  { id: 2, name: 'Phase 2', deadline: '2026-10-15', targets: { grammar: 1, vocab: 0.8, kanji: 0.8 } },
-  { id: 3, name: 'Phase 3', deadline: '2026-11-15', targets: { grammar: 1, vocab: 1, kanji: 1 } },
-  // Phase thi thử: không có target đo được -> marker dừng ở đầu đoạn này.
-  { id: 4, name: 'Phase 4', deadline: '2026-12-05', targets: {} },
+  { id: 1, name: 'フェーズ1', deadline: '2026-08-31', targets: { grammar: 1, vocab: 0.4, kanji: 0.4 } },
+  { id: 2, name: 'フェーズ2', deadline: '2026-10-15', targets: { grammar: 1, vocab: 0.8, kanji: 0.8 } },
+  { id: 3, name: 'フェーズ3', deadline: '2026-11-15', targets: { grammar: 1, vocab: 1, kanji: 1 } },
+  // 模試フェーズ: 測れる目標がないので、マーカーはこの区間の先頭で止まる。
+  { id: 4, name: 'フェーズ4', deadline: '2026-12-05', targets: {} },
 ]
 
-/** Trạng thái thẻ có sẵn của bạn, để mở demo lên đã có gì đó để xem. */
+/** 開いた直後から何か見えるように、自分のカード状態を少しだけ用意しておく。 */
 export const SEED_REVIEWS: Record<string, ReviewStatus> = {
   'cd-g1-1': 'known',
   'cd-g1-2': 'known',
@@ -50,6 +50,8 @@ export const SEED_REVIEWS: Record<string, ReviewStatus> = {
   'cd-k1-1': 'known',
 }
 
+// コメント本文がベトナム語なのは、クラスの参加者がベトナム語話者だから。
+// 学習者が実際に書く文章として、そのまま残している。
 export const SEED_COMMENTS: Comment[] = [
   {
     id: 'cm-1',

@@ -1,64 +1,71 @@
-# Happy Class — demo
+# Happy Class — デモ
 
-Bản demo công khai của một app học JLPT N1 (文法 / 語彙 / 漢字): flashcard, quiz,
-bình luận theo chương và timeline tiến độ của cả lớp.
+JLPT N1（文法 / 語彙 / 漢字）学習アプリの公開デモです。フラッシュカード、クイズ、
+課ごとのコメント、クラス全体の進捗タイムラインを備えています。
 
-**Không cần đăng nhập, không cần database.** Toàn bộ nội dung là dữ liệu mẫu nằm
-trong `src/data/`; những gì bạn bấm (đã thuộc / chưa thuộc, điểm quiz, bình luận)
-được lưu vào `localStorage` của chính trình duyệt đang mở. Nút **Đặt lại** ở
-header xoá sạch và trả về trạng thái ban đầu.
+**ログイン不要・データベース不要。** 表示される内容はすべて `src/data/` にある
+ダミーデータで、操作した結果（覚えた／まだ、クイズの点数、コメント）は開いている
+ブラウザの `localStorage` にのみ保存されます。ヘッダーの **リセット** ですべて消して
+初期状態に戻せます。
 
-## Chạy thử
+## 動かす
 
 ```bash
 npm install
 npm run dev
 ```
 
-Mở http://localhost:3000 — trang chủ chuyển thẳng tới `/dashboard`.
+http://localhost:3000 を開くと `/dashboard` に転送されます。
 
-## Có gì trong demo
+## 画面
 
-| Trang | Nội dung |
+| パス | 内容 |
 | --- | --- |
-| `/dashboard` | Tiến độ theo từng mảng + timeline 4 phase của cả lớp |
-| `/grammar`, `/vocab`, `/kanji` | Chọn chương → flashcard lật được, quiz của chương, bình luận |
-| `/quiz/[quizId]` | Làm quiz trắc nghiệm, chấm ngay, có giải thích từng câu |
-| `/admin` | Bảng tiến độ cả lớp |
+| `/dashboard` | 分野ごとの進捗と、4 フェーズのクラスタイムライン |
+| `/grammar`, `/vocab`, `/kanji` | 課を選ぶ → カードをめくる、課のクイズ、コメント |
+| `/quiz/[quizId]` | 4 択クイズ。その場で採点し、問題ごとに解説を表示 |
+| `/admin` | クラス全体の進捗テーブル |
 
-Vài hành vi được giữ nguyên từ bản thật vì chúng là phần thú vị của app:
+本番から意図して残した仕様がいくつかあります。
 
-- Tiến độ đo bằng **số thẻ** đã đụng tới, không phải số quiz đã làm.
-- Trả lời sai một câu quiz → thẻ tương ứng bị đánh dấu **cần review** (`weak`).
-  Thẻ đang `weak` không hạ được bằng nút trên flashcard; phải làm đúng câu quiz đó
-  mới gỡ.
-- Chương đang chọn nằm ở query param `?ch=` nên chia sẻ link được và nút Back chạy đúng.
-- Mobile-first: bottom tab trên điện thoại, bình luận đẩy xuống dưới card thay vì
-  bị giấu đi; mọi nút bấm ≥44px.
+- 進捗は **カードの枚数** で測る。解いたクイズ数ではない。
+- クイズで間違えると、その問題に紐づくカードが **要復習**（`weak`）になる。
+  `weak` のカードはフラッシュカード側のボタンでは下げられず、同じ問題に正解して
+  初めて解除される。
+- 選択中の課はクエリパラメータ `?ch=` に入れるので、URL を共有でき、ブラウザの
+  戻るも正しく動く。
+- モバイルファースト。スマホでは下タブ、コメントはサイドバーではなくカードの下に
+  回り込む。タップ対象はすべて 44px 以上。
 
-## Khác gì so với bản thật
+## 本番との違い
 
-Bản thật chạy trên Supabase (Postgres + Auth), đọc dữ liệu bằng Server Component
-và ghi bằng Server Action, mọi bảng đều bật RLS. Bản demo bỏ hết phần đó:
+本番は Supabase（Postgres + Auth）上で動き、読み取りは Server Component、書き込みは
+Server Action、全テーブルで RLS を有効にしています。デモではその層をすべて外しました。
 
-| Bản thật | Bản demo |
+| 本番 | デモ |
 | --- | --- |
-| Supabase Auth (whitelist email) | Không đăng nhập, có sẵn một "bạn" giả (`DEMO_USER`) |
-| Postgres + RLS | Mảng TypeScript trong `src/data/` |
-| Server Action ghi DB | State React + `localStorage` (`src/lib/demo-store.tsx`) |
-| Chấm quiz ở server, không gửi đáp án về client | Chấm ở client — đáp án nằm trong bundle |
+| Supabase Auth（招待メールのホワイトリスト） | ログインなし。ダミーの利用者 `DEMO_USER` が固定で入っている |
+| Postgres + RLS | `src/data/` の TypeScript 配列 |
+| Server Action で DB に書き込み | React の state + `localStorage`（`src/lib/demo-store.ts`） |
+| サーバーで採点し、正解はクライアントに送らない | クライアントで採点するため、正解がバンドルに含まれる |
 
-Nói cách khác: demo này để xem giao diện và luồng thao tác, **không** phải mẫu
-tham khảo về bảo mật.
+つまりこのデモは UI と操作の流れを見るためのもので、**セキュリティの参考実装では
+ありません**。
 
-## Cấu trúc
+## 表示言語について
+
+UI のラベルは日本語ですが、カードの意味・例文の訳・解説・学習者のコメントは
+ベトナム語のままにしています。このアプリの想定利用者が「ベトナム語話者の N1 受験者」で、
+その部分は翻訳すると学習内容として成立しなくなるためです。
+
+## 構成
 
 ```
 src/
   app/
     (app)/
-      layout.tsx              # header + bottom tab + DemoProvider
-      [track]/page.tsx        # track = grammar | vocab | kanji, chương qua ?ch=
+      layout.tsx              # ヘッダー + 下タブ
+      [track]/page.tsx        # track = grammar | vocab | kanji、課は ?ch= で指定
       dashboard/
       quiz/[quizId]/
       admin/
@@ -67,32 +74,32 @@ src/
     quiz-runner.tsx
     comments-panel.tsx
     progress-timeline.tsx
-    ui/                       # shadcn (Base UI)
-  data/                       # toàn bộ dữ liệu mẫu
+    ui/                       # shadcn/ui（Base UI）
+  data/                       # ダミーデータ一式
     types.ts
     content.ts                # books / chapters / cards / quizzes / questions
-    members.ts                # lớp học giả, phase, bình luận mẫu
+    members.ts                # ダミーのクラス、フェーズ、初期コメント
   lib/
-    demo-store.tsx            # thay cho Supabase: state + localStorage
-    tracks.ts                 # map 'grammar' <-> '文法'
+    demo-store.ts             # Supabase の代わり: ストア + localStorage
+    tracks.ts                 # 'grammar' <-> '文法' の対応
 ```
 
-## Stack
+## 技術スタック
 
-Next.js 16 (App Router) · React 19 · TypeScript strict · Tailwind CSS v4 ·
-shadcn/ui trên Base UI · lucide-react.
+Next.js 16（App Router）· React 19 · TypeScript strict · Tailwind CSS v4 ·
+shadcn/ui（Base UI）· lucide-react
 
-## Deploy
+## デプロイ
 
-Là một app Next.js bình thường, deploy được lên Vercel hoặc bất cứ đâu chạy được
-`next build` + `next start`:
+ふつうの Next.js アプリなので、Vercel でも `next build` + `next start` が動く環境なら
+どこでも動きます。
 
 ```bash
 npm run build
 npm run start
 ```
 
-## Giấy phép
+---
 
-MIT — xem [LICENSE](./LICENSE). Nội dung tiếng Nhật trong `src/data/` là ví dụ tự
-soạn cho mục đích minh hoạ, không trích từ giáo trình nào.
+`src/data/` に入っている日本語の例文・問題は、動作確認用にすべて自作したものです。
+市販の教材からの引用は含みません。
